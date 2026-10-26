@@ -1,0 +1,12 @@
+20: wlan0 inet6 2001:db8:1::10/64 scope global dynamic mngtmpaddr valid_lft 7200sec preferred_lft 3600sec
+20: wlan0 inet6 2001:db8:1::11/64 scope global temporary dynamic valid_lft 7200sec preferred_lft 3600sec
+20: wlan0 inet6 2001:db8:1::12/64 scope global secondary valid_lft 7200sec preferred_lft 3600sec
+20: wlan0 inet6 2001:db8:1::13/64 scope global deprecated valid_lft 7200sec preferred_lft 0sec
+20: wlan0 inet6 2001:db8:1::14/64 scope global tentative valid_lft 7200sec preferred_lft 3600sec
+20: wlan0 inet6 2001:db8:1::15/64 scope global dadfailed valid_lft 7200sec preferred_lft 3600sec
+20: wlan0 inet6 2001:db8:1::16/64 scope global dynamic valid_lft 7200sec preferred_lft 0sec
+20: wlan0 inet6 fd00::10/64 scope global valid_lft forever preferred_lft forever
+20: wlan0 inet6 fe80::10/64 scope link valid_lft forever preferred_lft forever
+20: wlan0 inet6 2001:db8:2::20/64 scope global valid_lft forever preferred_lft forever
+20: wlan0 inet6 2001:db8:2::21/64 scope global valid_lft 7200 preferred_lft 0
+20: wlan0 inet6 4001:db8::10/64 scope global valid_lft forever preferred_lft forever

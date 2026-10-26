@@ -1,0 +1,36 @@
+# 验证范围 / Validation scope
+
+## 已验证 / Verified
+
+- 原始个人部署：Redmi Note 10 Pro、移植版澎湃 OS 4、BakaSU、ARM64；取址、Cloudflare AAAA 更新、重启自启、CPU 唤醒锁状态、原生控制界面。
+- Original personal deployment: IPv6 selection, Cloudflare AAAA updates, reboot startup, CPU wake-lock state and native controls on Redmi Note 10 Pro / ported HyperOS 4 / BakaSU / ARM64.
+- 公开版：英文/中文资源与 Java 编译、APK 签名校验、Shell 语法检查、IPv6 过滤样例。查看 Actions 获取每次提交的实际检查结果。
+- Public source: EN/ZH resources and Java compilation, APK signature verification, shell syntax checks and IPv6 filtering fixtures. Check Actions for results on each commit.
+
+## 未验证与限制 / Not yet validated and limitations
+
+- 公开版首次安装、升级和卸载在不同设备上的完整流程；所有 ROM / KernelSU / Magisk 组合；长时间无人值守运行与耗电。
+- End-to-end public installer/upgrade/uninstall across devices; every ROM / KernelSU / Magisk combination; extended unattended operation and battery usage.
+- Android 最低版本声明为 8.0 不代表已经在 Android 8.0 实机验证。
+- A minimum SDK of Android 8.0 is not a claim of physical-device testing on Android 8.0.
+- 没有可用地址、网络切换、多个有效地址、唤醒锁内核接口缺失等情况，需要按设备继续验证。
+- No-address scenarios, network changes, multiple eligible addresses and kernels without wake-lock interfaces require further device-specific validation.
+- 300 秒为配置的检查间隔，不是实时执行承诺。系统调度和网络状态可能导致延迟。
+- 300 seconds is the configured polling interval, not a real-time execution guarantee.
+
+## 本地检查 / Local checks
+
+```sh
+sh tests/test-ipv6.sh
+for f in runtime/*.sh tests/*.sh; do sh -n "$f"; done
+```
+
+Android BusyBox 可运行同一过滤测试 / Android BusyBox can run the same filtering test:
+
+```sh
+BUSYBOX=/data/adb/ksu/bin/busybox /data/adb/ksu/bin/busybox ash tests/test-ipv6.sh
+```
+
+样例使用文档专用的 `2001:db8::/32` 地址，不是真实设备地址。测试只验证过滤规则；输入已由 `ip ... dev wlan0 scope global` 限定接口。
+
+Fixtures use documentation-only `2001:db8::/32` addresses, not real device addresses. Tests cover filtering rules; the caller restricts input with `ip ... dev wlan0 scope global`.

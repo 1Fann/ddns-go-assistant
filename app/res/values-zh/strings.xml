@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ddns-go 助手</string>
+    <string name="tagline">动态域名解析 · 本机服务管理</string>
+    <string name="backend_status">后台状态</string>
+    <string name="connecting">正在连接…</string>
+    <string name="reading_service">正在读取 ddns-go 服务</string>
+    <string name="open_management">打开管理页面</string>
+    <string name="management_hint">域名配置、同步结果与账号设置</string>
+    <string name="background_run">后台运行</string>
+    <string name="background_hint">自动检查地址，并随开机启动</string>
+    <string name="keep_awake">息屏持续运行</string>
+    <string name="wake_initial">专用唤醒锁 · 保持运行会增加耗电</string>
+    <string name="wake_explanation">关闭息屏保活后更省电，但深度休眠可能延后检查。</string>
+    <string name="wifi_ipv6">Wi-Fi 公网 IPv6</string>
+    <string name="reading">读取中…</string>
+    <string name="refresh_status">刷新状态</string>
+    <string name="view_logs">查看日志</string>
+    <string name="about">基于官方 ddns-go 的非官方 Android 控制助手。\n关闭此 App 或管理页面，后台服务仍会运行。</string>
+    <string name="applied">设置已应用</string>
+    <string name="action_failed">操作未完成，请查看运行记录</string>
+    <string name="unavailable">暂时无法连接</string>
+    <string name="root_hint">请确认已授予“ddns-go 助手”Root 权限</string>
+    <string name="root_notice">在 BakaSU 中授权后点击“刷新状态”。若已授权，请确认后台服务仍在手机上。</string>
+    <string name="running">服务运行中</string>
+    <string name="not_running">服务未运行</string>
+    <string name="paused">已暂停</string>
+    <string name="running_awake">每 5 分钟检查 · 息屏保持运行</string>
+    <string name="running_sleep">每 5 分钟检查 · 允许深度休眠</string>
+    <string name="restart_hint">关闭再打开“后台运行”可重新启动</string>
+    <string name="paused_hint">后台与开机自启已暂停，域名记录保留</string>
+    <string name="wake_off">唤醒锁已关闭 · 深度休眠时可能延后</string>
+    <string name="wake_active">唤醒锁已生效 · 会增加耗电</string>
+    <string name="wake_pending">唤醒锁已开启 · 后台启动时生效</string>
+    <string name="waiting_ipv6">等待 Wi-Fi 公网 IPv6</string>
+    <string name="no_ipv6">无可用地址时保留现有解析</string>
+    <string name="ipv6_hint">非临时公网地址 · 解析结果见管理页面</string>
+    <string name="no_logs">暂无运行记录</string>
+    <string name="log_warning">最近日志有异常提示，请点击“查看日志”。</string>
+    <string name="local_only">管理页面仅限手机本机访问。</string>
+    <string name="recent_logs">最近运行记录</string>
+    <string name="close">关闭</string>
+    <string name="back">返回</string>
+    <string name="web_title">ddns-go 管理页面</string>
+    <string name="refresh">刷新</string>
+    <string name="local_window_only">此窗口仅访问手机本地管理页面</string>
+</resources>

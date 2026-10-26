@@ -1,0 +1,33 @@
+name: Build and checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          for f in runtime/*.sh tests/*.sh; do sh -n "$f"; done
+          sh tests/test-ipv6.sh
+  android:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - shell: pwsh
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - shell: pwsh
+        run: ./app/build.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ddns-go-assistant-test-apk
+          path: app/out/ddns-go-assistant-debug.apk
+          retention-days: 14

@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.sh text eol=lf
+*.awk text eol=lf
+*.java text eol=lf
+*.xml text eol=lf
+*.md text eol=lf
+*.ps1 text eol=lf
+*.yml text eol=lf

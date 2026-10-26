@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ddns-go Assistant</string>
+    <string name="tagline">Dynamic DNS · Local service control</string>
+    <string name="backend_status">Background service</string>
+    <string name="connecting">Connecting…</string>
+    <string name="reading_service">Reading ddns-go status</string>
+    <string name="open_management">Open management</string>
+    <string name="management_hint">Domains, sync results and account settings</string>
+    <string name="background_run">Run in background</string>
+    <string name="background_hint">Check addresses automatically and start on boot</string>
+    <string name="keep_awake">Keep CPU awake</string>
+    <string name="wake_initial">Dedicated wake lock · Uses more battery</string>
+    <string name="wake_explanation">Turning this off saves power, but deep sleep may delay checks.</string>
+    <string name="wifi_ipv6">Wi-Fi public IPv6</string>
+    <string name="reading">Reading…</string>
+    <string name="refresh_status">Refresh status</string>
+    <string name="view_logs">View logs</string>
+    <string name="about">Unofficial Android helper for ddns-go.\nThe background service keeps running when you close this app or the management page.</string>
+    <string name="applied">Settings applied</string>
+    <string name="action_failed">Action failed. Check the logs.</string>
+    <string name="unavailable">Service unavailable</string>
+    <string name="root_hint">Grant root access to ddns-go Assistant</string>
+    <string name="root_notice">Grant root access in BakaSU, then refresh. If already granted, check that the backend is installed.</string>
+    <string name="running">Service running</string>
+    <string name="not_running">Service stopped</string>
+    <string name="paused">Paused</string>
+    <string name="running_awake">5-minute checks · CPU kept awake</string>
+    <string name="running_sleep">5-minute checks · Deep sleep allowed</string>
+    <string name="restart_hint">Turn background running off and on to restart</string>
+    <string name="paused_hint">Service and boot startup paused; DNS records retained</string>
+    <string name="wake_off">Wake lock off · Deep sleep may delay checks</string>
+    <string name="wake_active">Wake lock held · Uses more battery</string>
+    <string name="wake_pending">Wake lock requested · Waiting for service/kernel support</string>
+    <string name="waiting_ipv6">Waiting for Wi-Fi public IPv6</string>
+    <string name="no_ipv6">No address available; existing DNS records are retained</string>
+    <string name="ipv6_hint">Non-temporary public address · See management for DNS results</string>
+    <string name="no_logs">No recent logs</string>
+    <string name="log_warning">The latest log reports a problem. Open View logs.</string>
+    <string name="local_only">Management is accessible only on this phone.</string>
+    <string name="recent_logs">Recent logs</string>
+    <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="web_title">ddns-go Management</string>
+    <string name="refresh">Refresh</string>
+    <string name="local_window_only">This window only opens the local management page</string>
+</resources>

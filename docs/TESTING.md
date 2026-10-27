@@ -10,6 +10,8 @@
 - v3.2.0: tested in-app recommended deployment in an isolated directory and port on the same Redmi phone; byte-for-byte configuration preservation; rollback after deliberately failing the replacement daemon; paused-state preservation; refusal to overwrite interrupted transactions. Tests did not replace the existing production backend.
 - 归档单元测试覆盖正确 ELF、SHA-256 不匹配、路径穿越成员、符号链接、重复引擎成员、错误架构和错误 tar 头。
 - Archive tests cover valid ELF, checksum mismatch, traversal members, symlinks, duplicate engine entries, wrong architecture and corrupt tar headers.
+- 最新版选项：实测官方 Release 元数据解析、官方资产 API 下载、SHA-256 校验、引擎替换和管理端可用。测试时最新稳定版与推荐版均为 v6.17.7。普通发行页下载链接曾在手机网络上超时，最新版改用官方资产 API 后完成。
+- Latest option: verified official Release metadata resolution, asset API download, SHA-256 verification, engine replacement and management availability. Both latest and recommended were v6.17.7 during testing. Browser release-download URLs timed out on the phone network; the official asset API completed the latest-release flow.
 
 ## 未验证与限制 / Not yet validated and limitations
 

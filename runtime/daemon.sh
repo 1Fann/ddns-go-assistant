@@ -4,6 +4,7 @@ umask 077
 export PATH=/system/bin:/system/xbin
 BASE=/data/adb/ddns-go
 BB=/data/adb/ksu/bin/busybox
+. "$BASE/interval.sh"
 exec 9>"$BASE/daemon.lock"
 "$BB" flock -n 9 || exit 0
 echo $$ > "$BASE/daemon.pid"
@@ -22,7 +23,8 @@ while [ ! -f "$BASE/disabled" ]; do
         [ -z "${child:-}" ] || wait "$child" 2>/dev/null || :
         # Explicit bootstrap DNS avoids Android Go builds falling back to ::1:53.
         # Adapt this resolver for your network; it is not the DDNS provider.
-        "$BASE/ddns-go" -l 127.0.0.1:9876 -f 300 -cacheTimes 1 -dns 223.5.5.5 -c "$BASE/config.yaml" 9>&- </dev/null >> "$BASE/ddns-go.log" 2>&1 &
+        read_interval
+        "$BASE/ddns-go" -l 127.0.0.1:9876 -f "$interval" -cacheTimes 1 -dns 223.5.5.5 -c "$BASE/config.yaml" 9>&- </dev/null >> "$BASE/ddns-go.log" 2>&1 &
         child=$!
         echo "$child" > "$BASE/engine.pid"
     fi

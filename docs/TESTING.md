@@ -2,6 +2,11 @@
 
 ## 已验证 / Verified
 
+- v3.3.0：同一 Redmi 手机由新版 App 自动升级已管理的后台适配脚本，配置逐字保留；实测立即更新重启单实例引擎、两分钟参数生效、暂停时修改间隔仍保持暂停、拒绝非法间隔和暂停时立即更新。最后恢复五分钟及原运行状态。
+- v3.3.0: the updated app upgraded helpers for the managed deployment on the same Redmi phone with byte-for-byte configuration preservation. Verified manual-update engine restart, an active two-minute argument, interval changes while paused, rejection of invalid values and manual updates while paused. Restored the original five-minute interval and running state afterward.
+- 间隔单元检查覆盖有效值、越界、非整数、过长数字、注入字符串、缺失文件及无效文件的五分钟回退。
+- Interval fixtures cover valid inputs, bounds, non-integers, excessive digits, injection strings, missing files and the five-minute fallback for invalid files.
+
 - 原始个人部署：Redmi Note 10 Pro、移植版澎湃 OS 4、BakaSU、ARM64；取址、Cloudflare AAAA 更新、重启自启、CPU 唤醒锁状态、原生控制界面。
 - Original personal deployment: IPv6 selection, Cloudflare AAAA updates, reboot startup, CPU wake-lock state and native controls on Redmi Note 10 Pro / ported HyperOS 4 / BakaSU / ARM64.
 - 公开版：英文/中文资源与 Java 编译、APK 签名校验、Shell 语法检查、IPv6 过滤样例。查看 Actions 获取每次提交的实际检查结果。
@@ -21,8 +26,8 @@
 - A minimum SDK of Android 8.0 is not a claim of physical-device testing on Android 8.0.
 - 没有可用地址、网络切换、多个有效地址、唤醒锁内核接口缺失等情况，需要按设备继续验证。
 - No-address scenarios, network changes, multiple eligible addresses and kernels without wake-lock interfaces require further device-specific validation.
-- 300 秒为配置的检查间隔，不是实时执行承诺。系统调度和网络状态可能导致延迟。
-- 300 seconds is the configured polling interval, not a real-time execution guarantee.
+- 默认 300 秒，可在首页修改；检查间隔不是实时执行承诺。系统调度和网络状态可能导致延迟。
+- The default is 300 seconds and can be changed on the home screen. Intervals are not real-time guarantees; scheduling and network conditions can cause delays.
 
 ## 本地检查 / Local checks
 

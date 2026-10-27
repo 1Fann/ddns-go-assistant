@@ -2,6 +2,16 @@
 
 [中文](INSTALL.zh-CN.md) · [Project home](../README.en.md)
 
+Get the signed `ddns-go-assistant.apk` from [GitHub Releases](https://github.com/1Fann/ddns-go-android-root/releases/latest). Actions test APKs may not be directly upgrade-compatible.
+
+## Home-screen updates and interval
+
+“Update DNS now” restarts the current backend to immediately run the upstream address check and DNS comparison. See the logs for the result; unchanged records are not forcibly rewritten. Management may require signing in again. This button is disabled while the backend is paused.
+
+Open “Check interval”, enter 1–1440 minutes and save. The default is 5 minutes, and changes survive reboot. Running backends restart to apply the new argument; paused backends remain paused. The value lives in the root-private `check-interval` file, without rewriting upstream `config.yaml`.
+
+App upgrades automatically update helpers for managed deployments, reusing the engine and preserving DNS configuration and running preferences. Unmarked manual deployments are not migrated automatically.
+
 ## Before installing
 
 - Android 8.0+, ARM64; see the README for actual compatibility scope.
@@ -86,7 +96,7 @@ Management is available only on the phone at `http://127.0.0.1:9876`. The embedd
 | Refresh status | Reads local state; does not force an immediate provider update |
 | View logs | Shows recent logs, which may include domains and IPs; redact before sharing |
 
-The polling interval is 300 seconds with `cacheTimes=1`. Unchanged addresses do not necessarily cause a provider API request every five minutes. Sleep, connectivity and kernel restrictions can delay execution.
+The default interval is 300 seconds, adjustable on the home screen, with `cacheTimes=1`. Unchanged addresses do not necessarily cause a provider API request on every check. Sleep, connectivity and kernel restrictions can delay execution.
 
 After initial deployment, verify at least:
 

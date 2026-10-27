@@ -25,8 +25,8 @@
     <string name="running">Service running</string>
     <string name="not_running">Service stopped</string>
     <string name="paused">Paused</string>
-    <string name="running_awake">5-minute checks · CPU kept awake</string>
-    <string name="running_sleep">5-minute checks · Deep sleep allowed</string>
+    <string name="running_awake">Checks every %1$d min · CPU kept awake</string>
+    <string name="running_sleep">Checks every %1$d min · Deep sleep allowed</string>
     <string name="restart_hint">Turn background running off and on to restart</string>
     <string name="paused_hint">Service and boot startup paused; DNS records retained</string>
     <string name="wake_off">Wake lock off · Deep sleep may delay checks</string>
@@ -75,4 +75,14 @@
     <string name="deploy_error_network">A network or system operation failed. Check GitHub connectivity and available storage, then retry.</string>
     <string name="deploy_done_paused">Updated successfully. Background running remains paused; enable it on the home screen when ready.</string>
     <string name="deploy_retry">Connection interrupted. Retrying the download…</string>
+    <string name="sync_now">Update DNS now</string>
+    <string name="sync_hint">Check and update now; unchanged records are retained. Restarts the backend, so management may require signing in again.</string>
+    <string name="sync_triggered">DNS check started. View logs for the result.</string>
+    <string name="check_interval">Check interval</string>
+    <string name="interval_value">Every %1$d minutes</string>
+    <string name="interval_help">Enter 1–1440 minutes (default: 5). Applies immediately and survives reboot. A paused backend stays paused. Short intervals increase battery and API usage.</string>
+    <string name="interval_invalid">Enter a whole number from 1 to 1440</string>
+    <string name="controls_update_needed">Update the managed backend to enable these controls.</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

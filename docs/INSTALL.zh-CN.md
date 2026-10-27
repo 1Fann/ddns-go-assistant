@@ -2,6 +2,16 @@
 
 [English](INSTALL.en.md) · [返回首页](../README.md)
 
+正式安装包见 [GitHub Releases](https://github.com/1Fann/ddns-go-android-root/releases/latest)。下载 `ddns-go-assistant.apk`；Actions 中的测试签名 APK 不能保证覆盖升级。
+
+## 首页更新与检查间隔
+
+“立即更新解析”会重启当前后台，立即执行官方引擎的检查和 DNS 比较；结果见日志，地址未变时不会强制改写记录。管理页面可能需要重新登录。后台暂停时此按钮不可用。
+
+点击“检查间隔”，输入 1–1440 分钟，保存后生效并随重启保留，默认值为 5 分钟。运行中的后台会重启以应用参数；已暂停的后台继续暂停。间隔存于 Root 私有目录的 `check-interval`，不改写上游 `config.yaml`。
+
+升级 App 后，已有受管理的后台会自动升级适配脚本，无需重新下载引擎，原有 DNS 配置和运行偏好保留。未标记的手动部署不自动迁移。
+
 ## 安装前
 
 - Android 8.0+、ARM64；实际兼容范围见首页。
@@ -86,7 +96,7 @@ adb shell "su -c 'rm -rf /data/local/tmp/ddns-go-root-runtime'"
 | 刷新状态 | 重新读取服务状态，不等同于立即向提供商更新 DNS |
 | 查看日志 | 显示最近日志，可能包含域名和 IP，分享前脱敏 |
 
-检查周期为 300 秒，`cacheTimes=1`。地址不变时不保证每 5 分钟请求一次提供商 API。系统休眠、断网、内核限制可能延迟执行。
+默认检查周期为 300 秒，可在首页修改，`cacheTimes=1`。地址不变时不保证每轮请求一次提供商 API。系统休眠、断网、内核限制可能延迟执行。
 
 首次部署后，至少测试：
 

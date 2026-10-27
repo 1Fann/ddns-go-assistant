@@ -2,6 +2,8 @@
 
 [中文](README.md) | **English**
 
+**[Download the release APK](https://github.com/1Fann/ddns-go-android-root/releases/latest)** · [Changelog](CHANGELOG.md)
+
 A lightweight **ddns-go Assistant** for rooted Android phones: inspect service status, control boot startup and a CPU wake lock, and open the upstream management UI inside the app.
 
 **Experimental · Unofficial · Root required.** Since v3.2.0, the app can download, verify and deploy the official engine without a computer. You must still grant root and configure DDNS credentials locally. This project is not affiliated with jeessy2/ddns-go or OpenListApp.
@@ -13,7 +15,7 @@ A lightweight **ddns-go Assistant** for rooted Android phones: inspect service s
 - The backend runs independently of the app and continues after the UI closes.
 - Selects a non-temporary IPv6 address in `2000::/3` from `wlan0`, rejecting `temporary`, `secondary`, `deprecated`, `tentative`, `dadfailed`, and zero preferred lifetime.
 - Keeps the previously selected address while it remains eligible, avoiding churn between multiple candidates.
-- Checks addresses every 300 seconds. Provider queries for unchanged addresses follow ddns-go caching behavior.
+- Update DNS immediately or set a persistent 1–1440 minute interval on the home screen (default: 5 minutes). Unchanged records are retained.
 - Uses the BakaSU/KernelSU `service.d` boot hook and offers a separate screen-off CPU wake-lock switch.
 - Management listens only on `127.0.0.1:9876`. The app does not call Cloudflare APIs directly.
 - Native UI supports English and Chinese based on the system locale. The web UI and engine logs are provided by upstream.
@@ -36,6 +38,8 @@ Read the **[English installation guide](docs/INSTALL.en.md)** / [中文安装指
 3. Open management to create a local administrator account. Existing managed installations retain their running preference.
 4. Select a provider such as Cloudflare and enter your own credentials and domain locally. Set IPv6 detection to command mode with `/data/adb/ddns-go/ipv6.sh`.
 5. Enable “Keep CPU awake” if required, and verify actual behavior in the logs.
+
+“Update DNS now” restarts the current single backend to trigger an immediate upstream check; management may require signing in again. Interval changes apply immediately and keep paused backends paused. First launch of a newer app updates helpers for app-managed deployments, reusing the local engine and preserving DNS configuration. The management page controls API, network-interface or command detection; use the filtering command above when non-temporary IPv6 selection is required.
 
 Do not put API tokens in shell commands, issues, screenshots or the repository. No working credentials or preconfigured domains are included. Disable IPv4 updates in the upstream UI if you only need IPv6.
 

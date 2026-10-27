@@ -2,6 +2,7 @@
 /app/out/
 /dist/
 *.apk
+!/releases/*/*.apk
 *.aab
 *.idsig
 *.jks

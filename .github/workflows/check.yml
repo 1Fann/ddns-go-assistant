@@ -13,6 +13,7 @@ jobs:
       - run: |
           for f in runtime/*.sh tests/*.sh; do sh -n "$f"; done
           sh tests/test-ipv6.sh
+          sh tests/test-interval.sh
   android:
     runs-on: windows-latest
     steps:
@@ -39,3 +40,23 @@ jobs:
           name: ddns-go-assistant-test-apk
           path: app/out/ddns-go-assistant-debug.apk
           retention-days: 14
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [scripts, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish a prepared signed release after checks pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("app/AndroidManifest.xml").getroot().attrib["{http://schemas.android.com/apk/res/android}versionName"])')
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          directory="releases/v$version"
+          if [ ! -f "$directory/SHA256SUMS" ]; then echo 'No prepared release for this version.'; exit 0; fi
+          (cd "$directory" && sha256sum --check SHA256SUMS)
+          if gh release view "v$version" >/dev/null 2>&1; then echo 'Release already exists; leaving it unchanged.'; exit 0; fi
+          gh release create "v$version" --target "$GITHUB_SHA" --title "ddns-go Assistant v$version" \
+            --notes-file "$directory/NOTES.md" "$directory/ddns-go-assistant.apk" "$directory/SHA256SUMS"

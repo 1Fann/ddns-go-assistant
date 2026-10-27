@@ -30,9 +30,9 @@ if [ -e "$BASE" ] || [ -e "$BOOT" ]; then
 else
     [ "$mode" != --upgrade ] || { echo NOTHING_TO_UPGRADE; exit 1; }
 fi
-files='ddns-go control.sh daemon.sh ipv6.sh filter-ipv6.awk wake.sh engine-version LICENSE.ddns-go'
+files='ddns-go control.sh daemon.sh interval.sh control-version ipv6.sh filter-ipv6.awk wake.sh engine-version LICENSE.ddns-go'
 for f in $files 99-ddns-go.sh; do [ -f "$SRC/$f" ] && [ ! -L "$SRC/$f" ] || { echo MISSING_PAYLOAD; exit 1; }; done
-for f in config.yaml disabled wake-disabled selected-ip control.sh daemon.sh wake.sh; do [ ! -L "$BASE/$f" ] || { echo UNSAFE_PATH; exit 1; }; done
+for f in config.yaml disabled wake-disabled selected-ip check-interval control.sh daemon.sh wake.sh; do [ ! -L "$BASE/$f" ] || { echo UNSAFE_PATH; exit 1; }; done
 rollback() {
     code=$?
     trap - EXIT TERM INT HUP
@@ -63,7 +63,7 @@ mkdir "$STAGE"
 chmod 700 "$STAGE"
 for f in $files; do cp "$SRC/$f" "$STAGE/$f"; done
 chmod 700 "$STAGE/ddns-go" "$STAGE/"*.sh
-chmod 600 "$STAGE/filter-ipv6.awk" "$STAGE/engine-version" "$STAGE/LICENSE.ddns-go"
+chmod 600 "$STAGE/filter-ipv6.awk" "$STAGE/engine-version" "$STAGE/control-version" "$STAGE/LICENSE.ddns-go"
 touch "$STAGE/.ddns-go-android-root"
 version=$(cat "$STAGE/engine-version")
 printf '%s\n' "$version" | "$BB" grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || exit 1
@@ -73,7 +73,7 @@ if [ "$existing" = 1 ]; then
     stopped=1
     "$BB" ash "$BASE/control.sh" stop 8>&- >/dev/null 2>&1
     "$BB" flock -n "$BASE/daemon.lock" true || { echo SERVICE_BUSY; exit 1; }
-    for f in config.yaml disabled wake-disabled selected-ip; do
+    for f in config.yaml disabled wake-disabled selected-ip check-interval; do
         [ ! -e "$BASE/$f" ] || cp -p "$BASE/$f" "$STAGE/$f"
     done
     [ "$was_enabled" = 0 ] || rm -f "$STAGE/disabled"

@@ -5,6 +5,10 @@ umask 077
 BASE=/data/adb/ddns-go
 BB=/data/adb/ksu/bin/busybox
 [ "$(id -u)" = 0 ] || { echo 'Root is required.' >&2; exit 1; }
+[ ! -L "$BASE.install.lock" ] || exit 1
+exec 8>"$BASE.install.lock"
+"$BB" flock -n 8 || { echo 'Installation in progress.' >&2; exit 1; }
+[ ! -e "$BASE.pending" ] && [ ! -e "$BASE.rollback" ] || { echo 'Recover the interrupted installation first.' >&2; exit 1; }
 [ "${1:-}" = --remove-data ] || {
     echo 'Usage: uninstall.sh --remove-data'
     echo 'Removes this backend and its local configuration, including credentials.'

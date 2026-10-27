@@ -6,9 +6,30 @@
 
 - Android 8.0+, ARM64; see the README for actual compatibility scope.
 - Root must provide `/data/adb/ksu/bin/busybox`, `su -M`, and `service.d` support.
-- Install ADB on your computer, enable USB debugging and authorize the computer. Commands assume one connected device; use `adb -s <serial>` for multiple devices.
-- Grant root to the ADB Shell. Do not remove an existing DDNS installation merely to try this package.
+- Only the manual ADB route requires a computer, USB debugging and root for the ADB Shell. In-app deployment does not. ADB commands assume one connected device; use `adb -s <serial>` for multiple devices.
+- Do not remove an existing DDNS installation merely to try this package.
 - The installer only targets `/data/adb/ddns-go` and `/data/adb/service.d/99-ddns-go.sh`. It refuses an unrecognized existing installation.
+
+## In-app deployment (recommended; no ADB needed)
+
+The ADB sections below are a manual alternative. Since v3.2.0, install the APK and open “Install / update backend”:
+
+1. Grant root in BakaSU and allow installation progress notifications.
+2. Choose the recommended version or the latest stable GitHub release, then tap the install button.
+3. Wait for compatibility checks, download, SHA-256 verification, deployment and startup checks. Work continues when switching pages; do not force-stop the app or reboot during installation.
+4. A fresh deployment enables background running and boot startup, with the long-term wake lock off. Open management and configure your account, token, domain and IPv6 detection command.
+
+Existing managed installations retain configuration and running preferences. A previously paused service remains paused; enable it on the home screen before opening management. Earlier manual installations without an ownership marker are not overwritten; the home screen can continue managing them.
+
+Recommended downloads use a built-in SHA-256. Latest downloads resolve the official Release API, accept stable semantic version tags and the Android ARM64 asset, and use its API digest or release checksums.txt. Rate limits, network failures, missing checksums and unsupported architectures stop installation rather than bypass verification. The foreground notification and temporary CPU wake lock are only for deployment; they do not enable long-term screen-off wake locking.
+
+## Interrupted installation and recovery
+
+Updates stop the old service, retain its directory at `/data/adb/ddns-go.rollback`, switch to the new directory and check the local management port. Normal failures attempt to restore old files and the running preference. Successful updates delete the temporary rollback copy to avoid duplicate credentials.
+
+Power loss or force-killing a process can prevent rollback. If `.pending` or `.rollback` remains, the installer reports `RECOVERY_REQUIRED` and refuses further overwrites. **These directories may contain credentials; never upload them.** Inspect the service and both directories with root: securely back up configuration and stop any remaining processes first. If `.rollback` is complete, restore it to the original directory and restore its `.previous-boot` file as the boot entry. If integrity is unclear, preserve the files and ask a maintainer for help instead of deleting recovery data or bypassing ownership checks.
+
+Automatic rollback is an attempt to restore files, not a substitute for secure configuration backups. Paused installations receive only a version execution check; they are not activated merely to test DNS updates.
 
 ## 1. Build and prepare the engine
 

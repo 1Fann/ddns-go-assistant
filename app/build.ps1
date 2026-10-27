@@ -26,8 +26,13 @@ if (Test-Path -LiteralPath $build) {
     if ((Get-Item -LiteralPath $build).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Build directory must not be a link.' }
     Remove-Item -LiteralPath $resolved -Recurse -Force
 }
-New-Item -ItemType Directory -Force -Path $build,"$build/classes","$build/dex","$build/generated",$out | Out-Null
-& "$bt/aapt.exe" package -f -m -J "$build/generated" -M "$project/AndroidManifest.xml" -S "$project/res" -I $androidJar -F "$build/resources.apk"
+New-Item -ItemType Directory -Force -Path $build,"$build/classes","$build/dex","$build/generated","$build/assets/runtime",$out | Out-Null
+$runtime = Join-Path (Split-Path -Parent $project) 'runtime'
+foreach ($name in @('control.sh','daemon.sh','ipv6.sh','filter-ipv6.awk','wake.sh','99-ddns-go.sh','install.sh','LICENSE.ddns-go')) {
+    $content = [IO.File]::ReadAllText((Join-Path $runtime $name)).Replace("`r`n","`n")
+    [IO.File]::WriteAllText((Join-Path "$build/assets/runtime" $name),$content,[Text.UTF8Encoding]::new($false))
+}
+& "$bt/aapt.exe" package -f -m -J "$build/generated" -M "$project/AndroidManifest.xml" -S "$project/res" -A "$build/assets" -I $androidJar -F "$build/resources.apk"
 Check-Exit
 $sources = @(Get-ChildItem -LiteralPath "$project/src","$build/generated" -Filter '*.java' -Recurse | ForEach-Object FullName)
 & (Tool 'javac') -encoding UTF-8 --release 8 -classpath $androidJar -d "$build/classes" @sources

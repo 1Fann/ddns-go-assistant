@@ -4,10 +4,12 @@
 
 A lightweight **ddns-go Assistant** for rooted Android phones: inspect service status, control boot startup and a CPU wake lock, and open the upstream management UI inside the app.
 
-**Experimental · Unofficial · Root required.** The APK is a control panel. It requires the backend scripts in this repository and the official ddns-go engine. Installing the APK alone does not deploy DDNS. This project is not affiliated with jeessy2/ddns-go or OpenListApp.
+**Experimental · Unofficial · Root required.** Since v3.2.0, the app can download, verify and deploy the official engine without a computer. You must still grant root and configure DDNS credentials locally. This project is not affiliated with jeessy2/ddns-go or OpenListApp.
 
 ## Features
 
+- In-app deployment: recommended v6.17.7 by default, or the latest stable release from official GitHub. The installer currently supports ARM64 only.
+- SHA-256 verification, restricted archive extraction, progress notification, configuration preservation and rollback on failed startup checks. Missing checksums stop installation.
 - The backend runs independently of the app and continues after the UI closes.
 - Selects a non-temporary IPv6 address in `2000::/3` from `wlan0`, rejecting `temporary`, `secondary`, `deprecated`, `tentative`, `dadfailed`, and zero preferred lifetime.
 - Keeps the previously selected address while it remains eligible, avoiding churn between multiple candidates.
@@ -29,13 +31,15 @@ Wake locking uses more battery and is off by default on a fresh installation. It
 
 Read the **[English installation guide](docs/INSTALL.en.md)** / [中文安装指南](docs/INSTALL.zh-CN.md).
 
-1. Build the app and prepare the checksum-verified ARM64 backend bundle.
-2. Install the backend over ADB, install the APK, and grant root access.
-3. Enable background running and open management to create a local administrator account.
+1. Install the APK, open “Install / update backend”, and grant root and progress-notification permissions.
+2. Keep the recommended version or select “Latest stable release on GitHub”, then tap “Grant root and install / update”. Fresh deployments start automatically with the screen-off wake lock disabled.
+3. Open management to create a local administrator account. Existing managed installations retain their running preference.
 4. Select a provider such as Cloudflare and enter your own credentials and domain locally. Set IPv6 detection to command mode with `/data/adb/ddns-go/ipv6.sh`.
 5. Enable “Keep CPU awake” if required, and verify actual behavior in the logs.
 
 Do not put API tokens in shell commands, issues, screenshots or the repository. No working credentials or preconfigured domains are included. Disable IPv4 updates in the upstream UI if you only need IPv6.
+
+The phone needs HTTPS access to GitHub APIs, release pages and release-asset hosts. Latest releases are verified using the official API SHA-256 digest or checksums.txt from the same release; this does not imply compatibility testing. Earlier manual installations are not silently overwritten; see the migration guide.
 
 ## Layout
 
@@ -47,7 +51,7 @@ docs/                 Bilingual installation, validation and security documentat
 prepare-runtime.ps1   Download and verify a pinned official engine
 ```
 
-The engine is pinned to the unmodified official **v6.17.7 Android ARM64** release and downloaded from upstream; no engine binary is committed here. The engine also serves its own web UI. See [upstream provenance](docs/UPSTREAM.md).
+The recommended engine is the unmodified official **v6.17.7 Android ARM64** release; the latest stable release is optional. Engines are downloaded from upstream and are not committed here. The engine also serves its own web UI. See [upstream provenance](docs/UPSTREAM.md).
 
 ## Build
 

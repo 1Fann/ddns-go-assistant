@@ -24,7 +24,7 @@ public final class MainActivity extends Activity {
     private final Handler handler=new Handler();
     private TextView status, subtitle, address, synced, wakeHint, engineVersion, notice;
     private Switch serviceSwitch, wakeSwitch;
-    private Button checkButton, refreshButton, logButton;
+    private Button checkButton, refreshButton, logButton, deployButton;
     private ProgressBar progress;
     private boolean binding=false, busy=false, resumed=false;
     private String logs="";
@@ -47,6 +47,8 @@ public final class MainActivity extends Activity {
         engineVersion=text("ddns-go",12,Color.rgb(115,218,255),true);hero.addView(engineVersion);
         progress=new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);progress.setIndeterminate(true);progress.setIndeterminateTintList(ColorStateList.valueOf(ACCENT));
         LinearLayout.LayoutParams pp=new LinearLayout.LayoutParams(-1,dp(3));pp.topMargin=dp(8);pp.bottomMargin=dp(8);page.addView(progress,pp);
+        deployButton=button(getString(R.string.deploy_entry),false);add(page,deployButton,0,10);
+        deployButton.setOnClickListener(v->startActivity(new android.content.Intent(this,DeploymentActivity.class)));
         checkButton=button(getString(R.string.open_management),true);add(page,checkButton,0,5);checkButton.setOnClickListener(v->startActivity(new android.content.Intent(this,WebActivity.class)));
         TextView manageHint=text(getString(R.string.management_hint),12,MUTED,false);manageHint.setGravity(Gravity.CENTER);add(page,manageHint,0,18);
 
@@ -87,20 +89,26 @@ public final class MainActivity extends Activity {
     private static class Result {int code;String output;Result(int c,String o){code=c;output=o;}}
     private Result run(String operation) throws Exception {
         if(!Arrays.asList("state","start","stop","wake-on","wake-off").contains(operation))throw new IllegalArgumentException();
-        Process process=new ProcessBuilder("su","-M","-c",CONTROL+operation).redirectErrorStream(true).start();
-        process.getOutputStream().close();
-        if(!process.waitFor(20,TimeUnit.SECONDS)){process.destroyForcibly();throw new Exception("timeout");}
-        ByteArrayOutputStream data=new ByteArrayOutputStream();InputStream input=process.getInputStream();byte[] buf=new byte[2048];int n;
-        while((n=input.read(buf))!=-1){if(data.size()+n<=32768)data.write(buf,0,n);}input.close();
-        return new Result(process.exitValue(),new String(data.toByteArray(),StandardCharsets.UTF_8));
+        String command=CONTROL+operation;
+        if(operation.equals("state"))command="[ \"$(id -u)\" = 0 ] || exit 1; if [ -f /data/adb/ddns-go/control.sh ]; then "+command+"; else echo setup=missing; fi";
+        RootShell.Result result=RootShell.run(command,20);
+        return new Result(result.code,result.output);
     }
     private void load(String operation){
-        if(busy||isFinishing())return;setBusy(true);
+        if(busy||isFinishing())return;
+        if(DeploymentService.ACTIVE.get()){
+            serviceSwitch.setEnabled(false);wakeSwitch.setEnabled(false);checkButton.setEnabled(false);refreshButton.setEnabled(false);
+            status.setText(R.string.deploy_installing);return;
+        }
+        setBusy(true);
         worker.execute(()->{
             try{
                 Result action=operation==null?null:run(operation);
                 if("start".equals(operation))Thread.sleep(650);
                 Result r=run("state");
+                if(r.code==0&&r.output.contains("setup=missing")){
+                    runOnUiThread(()->{if(isFinishing())return;setBusy(false);status.setText(R.string.deploy_not_installed);subtitle.setText(R.string.deploy_first_step);address.setText("—");notice.setText(R.string.deploy_credentials_note);serviceSwitch.setEnabled(false);wakeSwitch.setEnabled(false);checkButton.setEnabled(false);});return;
+                }
                 if(r.code!=0||!r.output.contains("engine=ddns-go"))throw new Exception("root/backend unavailable");
                 runOnUiThread(()->{if(isFinishing())return;setBusy(false);render(r.output);if(action!=null)Toast.makeText(this,action.code==0?getString(R.string.applied):getString(R.string.action_failed),Toast.LENGTH_SHORT).show();});
             }catch(Exception e){runOnUiThread(()->{if(isFinishing())return;setBusy(false);status.setText(getString(R.string.unavailable));subtitle.setText(getString(R.string.root_hint));notice.setText(getString(R.string.root_notice));serviceSwitch.setEnabled(false);wakeSwitch.setEnabled(false);checkButton.setEnabled(false);});}

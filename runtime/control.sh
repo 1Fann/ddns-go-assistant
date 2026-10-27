@@ -31,6 +31,17 @@ case "${1:-state}" in
         if running; then kill "$pid"; fi
         attempts=0
         while running && [ "$attempts" -lt 8 ]; do /system/bin/sleep 1; attempts=$((attempts+1)); done
+        if running; then echo SERVICE_BUSY; exit 1; fi
+        # A supervisor killed externally may have left an orphaned engine.
+        engine_pid=$(cat "$BASE/engine.pid" 2>/dev/null)
+        case "$engine_pid" in ''|*[!0-9]*) ;; *)
+            if [ -r "/proc/$engine_pid/cmdline" ] && "$BB" tr '\000' ' ' < "/proc/$engine_pid/cmdline" | "$BB" grep -qF "$BASE/ddns-go -l "; then
+                kill "$engine_pid" 2>/dev/null || :
+                attempts=0
+                while kill -0 "$engine_pid" 2>/dev/null && [ "$attempts" -lt 8 ]; do /system/bin/sleep 1; attempts=$((attempts+1)); done
+                if kill -0 "$engine_pid" 2>/dev/null; then echo SERVICE_BUSY; exit 1; fi
+            fi;;
+        esac
         "$BB" ash "$BASE/wake.sh" release;;
     wake-on) exec "$BB" ash "$BASE/wake.sh" on;;
     wake-off) exec "$BB" ash "$BASE/wake.sh" off;;

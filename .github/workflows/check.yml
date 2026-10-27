@@ -29,6 +29,11 @@ jobs:
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - shell: pwsh
         run: ./app/build.ps1
+      - shell: pwsh
+        run: |
+          javac -d app/build/tests app/src/com/mcyao/ddnspanel/ReleaseArchive.java tests/ReleaseArchiveTest.java
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          java -cp app/build/tests ReleaseArchiveTest
       - uses: actions/upload-artifact@v4
         with:
           name: ddns-go-assistant-test-apk

@@ -6,11 +6,15 @@
 - Original personal deployment: IPv6 selection, Cloudflare AAAA updates, reboot startup, CPU wake-lock state and native controls on Redmi Note 10 Pro / ported HyperOS 4 / BakaSU / ARM64.
 - 公开版：英文/中文资源与 Java 编译、APK 签名校验、Shell 语法检查、IPv6 过滤样例。查看 Actions 获取每次提交的实际检查结果。
 - Public source: EN/ZH resources and Java compilation, APK signature verification, shell syntax checks and IPv6 filtering fixtures. Check Actions for results on each commit.
+- v3.2.0：在同一 Redmi 手机的独立测试目录和端口验证了 App 内推荐版下载部署；更新后配置逐字一致；故意破坏新后台启动后成功恢复旧后台；暂停偏好保留；残留事务目录阻止覆盖。测试未替换手机原有生产后台。
+- v3.2.0: tested in-app recommended deployment in an isolated directory and port on the same Redmi phone; byte-for-byte configuration preservation; rollback after deliberately failing the replacement daemon; paused-state preservation; refusal to overwrite interrupted transactions. Tests did not replace the existing production backend.
+- 归档单元测试覆盖正确 ELF、SHA-256 不匹配、路径穿越成员、符号链接、重复引擎成员、错误架构和错误 tar 头。
+- Archive tests cover valid ELF, checksum mismatch, traversal members, symlinks, duplicate engine entries, wrong architecture and corrupt tar headers.
 
 ## 未验证与限制 / Not yet validated and limitations
 
-- 公开版首次安装、升级和卸载在不同设备上的完整流程；所有 ROM / KernelSU / Magisk 组合；长时间无人值守运行与耗电。
-- End-to-end public installer/upgrade/uninstall across devices; every ROM / KernelSU / Magisk combination; extended unattended operation and battery usage.
+- 不同设备上的完整安装、升级和卸载流程；所有 ROM / KernelSU / Magisk 组合；长时间无人值守运行与耗电。断电或强制杀进程后的人工恢复尚未实机验证。
+- End-to-end installation/upgrade/uninstall across devices; every ROM / KernelSU / Magisk combination; extended unattended operation and battery usage. Manual recovery after power loss or forced process termination has not been device-tested.
 - Android 最低版本声明为 8.0 不代表已经在 Android 8.0 实机验证。
 - A minimum SDK of Android 8.0 is not a claim of physical-device testing on Android 8.0.
 - 没有可用地址、网络切换、多个有效地址、唤醒锁内核接口缺失等情况，需要按设备继续验证。

@@ -50,7 +50,7 @@ public final class DeploymentService extends Service {
     }
     private void stage(int text){message=text;getSystemService(NotificationManager.class).notify(21,notification());}
     private void deploy(boolean latest) throws Exception {
-        RootShell.Result pre=RootShell.run("id -u; [ -x "+RootShell.BB+" ] || exit 20; [ \"$(getprop ro.product.cpu.abi)\" = arm64-v8a ] || exit 21; if [ -e "+RootShell.BASE+" ] || [ -e /data/adb/service.d/99-ddns-go.sh ]; then [ -f "+RootShell.BASE+"/.ddns-go-android-root ] || exit 22; fi",25);
+        RootShell.Result pre=RootShell.run("id -u; [ -x "+RootShell.busybox()+" ] || exit 20; [ \"$(getprop ro.product.cpu.abi)\" = arm64-v8a ] || exit 21; if [ -e "+RootShell.BASE+" ] || [ -e /data/adb/service.d/99-ddns-go.sh ]; then [ -f "+RootShell.BASE+"/.ddns-go-android-root ] || exit 22; fi",25);
         if(!pre.output.startsWith("0\n"))throw new IOException("ROOT_REQUIRED");
         if(pre.code!=0)throw new IOException(pre.code==20?"ENVIRONMENT_UNSUPPORTED":pre.code==21?"ARCHITECTURE_UNSUPPORTED":pre.code==22?"EXISTING_INSTALLATION":"ROOT_REQUIRED");
         String tag=RECOMMENDED,hash=PIN;
@@ -102,7 +102,7 @@ public final class DeploymentService extends Service {
             for(String name:PAYLOAD)try(InputStream in=getAssets().open("runtime/"+name);OutputStream out=new FileOutputStream(new File(dir,name))){byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1)out.write(b,0,n);}
             try(OutputStream out=new FileOutputStream(new File(dir,"engine-version"))){out.write((tag+"\n").getBytes(StandardCharsets.US_ASCII));}
             stage(R.string.deploy_installing);
-            RootShell.Result result=RootShell.run(RootShell.BB+" ash "+RootShell.quote(new File(dir,"install.sh").getAbsolutePath())+" --app",180);
+            RootShell.Result result=RootShell.run(RootShell.busybox()+" ash "+RootShell.quote(new File(dir,"install.sh").getAbsolutePath())+" --app",180);
             if(result.code!=0||!result.output.contains("INSTALL_OK")){
                 if(result.output.contains("RECOVERY_REQUIRED"))throw new IOException("RECOVERY_REQUIRED");
                 if(result.output.contains("ROLLED_BACK"))throw new IOException("INSTALL_ROLLED_BACK");

@@ -1,8 +1,12 @@
 # ddns-go Android Root
 
+**Latest: 3.3.1** — [新手机部署与权限说明 / New-phone setup](NEW-PHONE-SETUP.md)
+
+Magisk、KernelSU/BakaSU、APatch BusyBox 自动识别；升级自动更新后台组件，保留域名、Token、间隔及唤醒锁设置。
+
 **中文** | [English](README.en.md)
 
-**[下载正式 APK](https://github.com/1Fann/ddns-go-android-root/releases/latest)** · [更新记录](CHANGELOG.md)
+**[下载正式 APK](https://github.com/1Fann/ddns-go-assistant/releases/latest)** · [更新记录](CHANGELOG.md)
 
 为已 Root 的安卓手机提供轻量的 **ddns-go 助手**：查看服务状态、控制开机自启与 CPU 唤醒锁，并在 App 内打开官方管理页面。
 
@@ -16,7 +20,7 @@
 - 从 `wlan0` 选择 `2000::/3` 范围内的非临时 IPv6，排除 `temporary`、`secondary`、`deprecated`、`tentative`、`dadfailed` 和首选生命周期为零的地址。
 - 优先保留上次选择的地址，只要它仍符合条件，避免多个地址之间来回切换。
 - 首页可立即更新解析，或设置 1–1440 分钟的检查间隔（默认 5 分钟，重启后保留）。地址未变时保留记录。
-- 使用 BakaSU/KernelSU 的 `service.d` 开机入口，提供独立的息屏保活开关。
+- 使用 Root 管理器的 `service.d` 开机入口，提供独立的息屏保活开关。
 - 管理页面只监听 `127.0.0.1:9876`；App 不直接调用 Cloudflare API。
 - App 原生界面支持中文和英文，跟随系统语言；网页和引擎日志由上游提供。
 - 不依赖 Termux，不修改路由器。

@@ -6,8 +6,14 @@ import java.util.concurrent.TimeUnit;
 
 /** Bounded output, drained while the child runs so a full pipe cannot deadlock it. */
 final class RootShell {
+ static String busybox()throws Exception{
+  String command="for p in /data/adb/magisk/busybox /data/adb/ksu/bin/busybox /data/adb/ap/bin/busybox; do if [ -x \"$p\" ]; then echo \"$p\"; exit 0; fi; done; exit 20";
+  String path=run(command,8).output.trim();
+  if(!path.matches("/data/adb/(magisk|ksu/bin|ap/bin)/busybox"))throw new IOException("需要 Root 管理器提供 BusyBox；请检查 Magisk、KernelSU 或 APatch 安装");
+  return path;
+ }
+
     static final String BASE="/data/adb/ddns-go";
-    static final String BB="/data/adb/ksu/bin/busybox";
     static final class Result {
         final int code; final String output;
         Result(int code,String output){this.code=code;this.output=output;}

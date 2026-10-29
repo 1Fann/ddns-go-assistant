@@ -6,7 +6,11 @@ umask 077
 export PATH=/system/bin:/system/xbin
 BASE=/data/adb/ddns-go
 BOOT=/data/adb/service.d/99-ddns-go.sh
-BB=/data/adb/ksu/bin/busybox
+BB=
+for candidate in /data/adb/magisk/busybox /data/adb/ksu/bin/busybox /data/adb/ap/bin/busybox; do
+  if [ -x "$candidate" ]; then BB=$candidate; break; fi
+done
+[ -n "$BB" ] || { echo busybox_missing; exit 20; }
 STAGE=$BASE.pending
 BACKUP=$BASE.rollback
 SRC=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)

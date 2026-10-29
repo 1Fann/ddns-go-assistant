@@ -9,7 +9,7 @@ final class BackendRuntime {
     static synchronized void ensureCurrent(Context context) throws Exception {
         RootShell.Result probe=RootShell.run("[ \"$(id -u)\" = 0 ] || exit 1; "
             +"if [ ! -f /data/adb/ddns-go/.ddns-go-android-root ]; then echo SKIP; "
-            +"elif [ \"$(cat /data/adb/ddns-go/control-version 2>/dev/null)\" = 3.3.0 ]; then echo CURRENT; "
+            +"elif [ \"$(cat /data/adb/ddns-go/control-version 2>/dev/null)\" = 3.3.1 ]; then echo CURRENT; "
             +"else echo UPDATE; fi",10);
         if(probe.code!=0)throw new IOException("ROOT_UNAVAILABLE");
         if(!probe.output.trim().equals("UPDATE"))return;
@@ -29,7 +29,7 @@ final class BackendRuntime {
                 +"[ ! -L /data/adb/ddns-go/ddns-go ] && [ ! -L /data/adb/ddns-go/engine-version ]; "
                 +"cp /data/adb/ddns-go/ddns-go "+target+"/ddns-go; "
                 +"cp /data/adb/ddns-go/engine-version "+target+"/engine-version; "
-                +RootShell.BB+" ash "+target+"/install.sh --upgrade",150);
+                +RootShell.busybox()+" ash "+target+"/install.sh --upgrade",150);
             if(result.code!=0){
                 String status="UNKNOWN";
                 for(String line:result.output.split("\\n"))if(line.trim().matches("[A-Z_]{3,40}"))status=line.trim();

@@ -1,8 +1,12 @@
 # ddns-go Android Root
 
+**Latest: 3.3.1** — [新手机部署与权限说明 / New-phone setup](NEW-PHONE-SETUP.md)
+
+Detect Magisk, KernelSU/BakaSU and APatch BusyBox automatically. Upgrade bundled controls while preserving DNS credentials, intervals and wake-lock choices.
+
 [中文](README.md) | **English**
 
-**[Download the release APK](https://github.com/1Fann/ddns-go-android-root/releases/latest)** · [Changelog](CHANGELOG.md)
+**[Download the release APK](https://github.com/1Fann/ddns-go-assistant/releases/latest)** · [Changelog](CHANGELOG.md)
 
 A lightweight **ddns-go Assistant** for rooted Android phones: inspect service status, control boot startup and a CPU wake lock, and open the upstream management UI inside the app.
 

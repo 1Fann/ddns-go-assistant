@@ -1,9 +1,13 @@
-#!/data/adb/ksu/bin/busybox ash
+#!/system/bin/sh
 set +x
 umask 077
 export PATH=/system/bin:/system/xbin
 BASE=/data/adb/ddns-go
-BB=/data/adb/ksu/bin/busybox
+BB=
+for candidate in /data/adb/magisk/busybox /data/adb/ksu/bin/busybox /data/adb/ap/bin/busybox; do
+  if [ -x "$candidate" ]; then BB=$candidate; break; fi
+done
+[ -n "$BB" ] || { echo busybox_missing; exit 20; }
 . "$BASE/interval.sh"
 exec 9>"$BASE/daemon.lock"
 "$BB" flock -n 9 || exit 0

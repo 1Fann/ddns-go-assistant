@@ -10,13 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y busybox
       - run: |
           for f in runtime/*.sh tests/*.sh; do sh -n "$f"; done
           sh tests/test-ipv6.sh
           sh tests/test-interval.sh
           python3 tests/test-cadence.py
-          BUSYBOX=$(command -v busybox) sh tests/test-reliability.sh
+      - name: Exercise recovery with BusyBox file locks
+        run: |
+          # Ubuntu's packaged BusyBox omits flock. Alpine's base BusyBox includes it.
+          docker run --rm --network none --mount "type=bind,source=$PWD,target=/repo,readonly" \
+            --workdir /repo --env BUSYBOX=/bin/busybox \
+            alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f \
+            sh -ec '
+              exec 9>/tmp/ci-flock
+              "$BUSYBOX" flock -n 9
+              if "$BUSYBOX" flock -n /tmp/ci-flock true; then echo "flock failed to exclude a competing opener" >&2; exit 1; fi
+              exec 9>&-
+              "$BUSYBOX" flock -n /tmp/ci-flock true
+              exec sh tests/test-reliability.sh
+            '
   android:
     runs-on: windows-latest
     steps:

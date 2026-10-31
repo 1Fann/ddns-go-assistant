@@ -8,10 +8,10 @@ for candidate in /data/adb/magisk/busybox /data/adb/ksu/bin/busybox /data/adb/ap
 done
 [ -n "$BB" ] || { echo busybox_missing; exit 20; }
 . "$BASE/interval.sh"
+. "$BASE/process.sh"
 running() {
     pid=$(cat "$BASE/daemon.pid" 2>/dev/null)
-    case "$pid" in ''|*[!0-9]*) return 1;; esac
-    [ -r "/proc/$pid/cmdline" ] && "$BB" tr '\000' ' ' < "/proc/$pid/cmdline" | "$BB" grep -qF "$BASE/daemon.sh"
+    process_running "$pid" daemon.sh
 }
 restart_enabled() {
     # The upstream engine performs a provider comparison on startup. Keep a
@@ -19,10 +19,10 @@ restart_enabled() {
     "$BB" ash "$BASE/control.sh" stop 8>&- || return 1
     "$BB" ash "$BASE/control.sh" start 8>&- || return 1
     attempt=0
-    while [ "$attempt" -lt 15 ]; do
+    while [ "$attempt" -lt 5 ]; do
         engine_pid=$(cat "$BASE/engine.pid" 2>/dev/null)
         case "$engine_pid" in ''|*[!0-9]*) ;; *)
-            if running && kill -0 "$engine_pid" 2>/dev/null && "$BB" wget -q -T 2 -O /dev/null http://127.0.0.1:9876/ 8>&- 2>/dev/null; then return 0; fi;;
+            if running && process_running "$engine_pid" ddns-go && engine_healthy; then return 0; fi;;
         esac
         attempt=$((attempt+1)); /system/bin/sleep 1
     done
@@ -38,9 +38,12 @@ case "${1:-state}" in
         engine_pid=$(cat "$BASE/engine.pid" 2>/dev/null)
         engine_running=0
         case "$engine_pid" in ''|*[!0-9]*) ;; *)
-            if [ -r "/proc/$engine_pid/cmdline" ] && "$BB" tr '\000' ' ' < "/proc/$engine_pid/cmdline" | "$BB" grep -qF "$BASE/ddns-go -l "; then engine_running=1; fi;;
+            if process_running "$engine_pid" ddns-go; then engine_running=1; fi;;
         esac
         if running && [ "$engine_running" = 1 ]; then echo 'running=1'; else echo 'running=0'; fi
+        watchdog_pid=$(cat "$BASE/watchdog.pid" 2>/dev/null)
+        if process_running "$watchdog_pid" watchdog.sh; then echo 'watchdog_running=1'; else echo 'watchdog_running=0'; fi
+        if [ "$engine_running" = 1 ] && engine_healthy; then echo 'healthy=1'; else echo 'healthy=0'; fi
         [ -f "$BASE/wake-disabled" ] && echo 'wake_enabled=0' || echo 'wake_enabled=1'
         if "$BB" grep -qw ddns_go /sys/power/wake_lock 2>/dev/null; then echo 'wake_held=1'; else echo 'wake_held=0'; fi
         printf 'address='; "$BB" ash "$BASE/ipv6.sh"; printf '\nsynced=\n'
@@ -51,21 +54,15 @@ case "${1:-state}" in
         /system/bin/sh /data/adb/service.d/99-ddns-go.sh 8>&-;;
     stop)
         touch "$BASE/disabled"
-        if running; then kill "$pid"; fi
-        attempts=0
-        while running && [ "$attempts" -lt 8 ]; do /system/bin/sleep 1; attempts=$((attempts+1)); done
-        if running; then echo SERVICE_BUSY; exit 1; fi
-        # A supervisor killed externally may have left an orphaned engine.
+        # Mark paused before signaling either peer, so recovery cannot undo an
+        # intentional stop. Escalate only PIDs whose exact component still matches.
+        watchdog_pid=$(cat "$BASE/watchdog.pid" 2>/dev/null)
+        stop_process "$watchdog_pid" watchdog.sh || { echo SERVICE_BUSY; exit 1; }
+        pid=$(cat "$BASE/daemon.pid" 2>/dev/null)
+        stop_process "$pid" daemon.sh || { echo SERVICE_BUSY; exit 1; }
         engine_pid=$(cat "$BASE/engine.pid" 2>/dev/null)
-        case "$engine_pid" in ''|*[!0-9]*) ;; *)
-            if [ -r "/proc/$engine_pid/cmdline" ] && "$BB" tr '\000' ' ' < "/proc/$engine_pid/cmdline" | "$BB" grep -qF "$BASE/ddns-go -l "; then
-                kill "$engine_pid" 2>/dev/null || :
-                attempts=0
-                while kill -0 "$engine_pid" 2>/dev/null && [ "$attempts" -lt 8 ]; do /system/bin/sleep 1; attempts=$((attempts+1)); done
-                if kill -0 "$engine_pid" 2>/dev/null; then echo SERVICE_BUSY; exit 1; fi
-            fi;;
-        esac
-        "$BB" ash "$BASE/wake.sh" release;;
+        stop_process "$engine_pid" ddns-go || { echo SERVICE_BUSY; exit 1; }
+        "$BB" timeout -k 1 4 "$BB" ash "$BASE/wake.sh" release;;
     wake-on) exec "$BB" ash "$BASE/wake.sh" on;;
     wake-off) exec "$BB" ash "$BASE/wake.sh" off;;
     sync|interval)

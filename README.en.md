@@ -1,6 +1,6 @@
 # ddns-go Android Root
 
-**Latest: 3.3.1** — [新手机部署与权限说明 / New-phone setup](NEW-PHONE-SETUP.md)
+**Latest: 3.3.4** — [新手机部署与权限说明 / New-phone setup](NEW-PHONE-SETUP.md)
 
 Detect Magisk, KernelSU/BakaSU and APatch BusyBox automatically. Upgrade bundled controls while preserving DNS credentials, intervals and wake-lock choices.
 
@@ -17,6 +17,7 @@ A lightweight **ddns-go Assistant** for rooted Android phones: inspect service s
 - In-app deployment: recommended v6.17.7 by default, or the latest stable release from official GitHub. The installer currently supports ARM64 only.
 - SHA-256 verification, restricted archive extraction, progress notification, configuration preservation and rollback on failed startup checks. Missing checksums stop installation.
 - The backend runs independently of the app and continues after the UI closes.
+- Independent watchdog and daemon peers recover exited/stalled supervision. Three consecutive failed local HTTP checks trigger engine recovery; deliberate pauses remain paused.
 - Selects a non-temporary IPv6 address in `2000::/3` from `wlan0`, rejecting `temporary`, `secondary`, `deprecated`, `tentative`, `dadfailed`, and zero preferred lifetime.
 - Keeps the previously selected address while it remains eligible, avoiding churn between multiple candidates.
 - Update DNS immediately or set a persistent 1–1440 minute interval on the home screen (default: 5 minutes). Unchanged records are retained.
@@ -29,9 +30,11 @@ A lightweight **ddns-go Assistant** for rooted Android phones: inspect service s
 
 The original deployment verified address selection, DNS updates and reboot startup on a **Redmi Note 10 Pro, a ported HyperOS 4 ROM, BakaSU, ARM64**. The public installer/uninstaller have not been validated across multiple phones. See [validation scope](docs/TESTING.md).
 
-Requires `/data/adb/ksu/bin/busybox`, root access supporting `su -M`, and a working `service.d` hook. CPU wake locking also requires `/sys/power/wake_lock` and `wake_unlock`. **Compatibility with every KernelSU version, Magisk or custom ROM is not claimed.**
+Requires root-manager BusyBox (Magisk, KernelSU/BakaSU and APatch paths are detected), root access supporting `su -M`, and a working `service.d` hook. CPU wake locking also requires `/sys/power/wake_lock` and `wake_unlock`. **Compatibility with every KernelSU version, Magisk or custom ROM is not claimed.**
 
 Wake locking uses more battery and is off by default on a fresh installation. It reduces deep-sleep delays; it does not guarantee real-time scheduling. Network loss, kernel restrictions and service failures still affect checks.
+
+Process liveness normally polls every second; HTTP probes, heartbeat writes and wake-lock renewal remain on a roughly 30-second cadence. Stalled supervision still requires four unchanged slow heartbeats. The first engine exit recovers quickly; repeated crashes back off from 2 to 30 seconds. Without the wake lock, CPU suspend postpones polling; ordinary shell loops cannot wake the CPU. Local HTTP readiness does not prove DNS-provider delivery. Simultaneous loss of both peers, whole-system failures and reboot gaps still require external monitoring. Lock-screen credentials and encryption remain unchanged.
 
 ## Install and use
 

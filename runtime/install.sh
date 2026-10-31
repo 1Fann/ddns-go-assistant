@@ -34,7 +34,7 @@ if [ -e "$BASE" ] || [ -e "$BOOT" ]; then
 else
     [ "$mode" != --upgrade ] || { echo NOTHING_TO_UPGRADE; exit 1; }
 fi
-files='ddns-go control.sh daemon.sh interval.sh control-version ipv6.sh filter-ipv6.awk wake.sh engine-version LICENSE.ddns-go'
+files='ddns-go control.sh daemon.sh watchdog.sh process.sh interval.sh control-version ipv6.sh filter-ipv6.awk wake.sh engine-version LICENSE.ddns-go'
 for f in $files 99-ddns-go.sh; do [ -f "$SRC/$f" ] && [ ! -L "$SRC/$f" ] || { echo MISSING_PAYLOAD; exit 1; }; done
 for f in config.yaml disabled wake-disabled selected-ip check-interval control.sh daemon.sh wake.sh; do [ ! -L "$BASE/$f" ] || { echo UNSAFE_PATH; exit 1; }; done
 rollback() {
@@ -44,6 +44,7 @@ rollback() {
         if [ "$switched" = 1 ] && [ -f "$BASE/.ddns-go-android-root" ]; then
             "$BB" ash "$BASE/control.sh" stop 8>&- >/dev/null 2>&1 || :
             if ! "$BB" flock -n "$BASE/daemon.lock" true; then echo RECOVERY_REQUIRED; exit 1; fi
+            if ! "$BB" flock -n "$BASE/watchdog.lock" true; then echo RECOVERY_REQUIRED; exit 1; fi
             rm -rf "$BASE"
         fi
         if [ -d "$BACKUP" ]; then
@@ -71,12 +72,13 @@ chmod 600 "$STAGE/filter-ipv6.awk" "$STAGE/engine-version" "$STAGE/control-versi
 touch "$STAGE/.ddns-go-android-root"
 version=$(cat "$STAGE/engine-version")
 printf '%s\n' "$version" | "$BB" grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || exit 1
-"$BB" timeout 10 "$STAGE/ddns-go" -v 8>&- 2>/dev/null | "$BB" grep -Fxq "$version" || { echo ENGINE_CHECK_FAILED; exit 1; }
+"$BB" timeout -k 1 10 "$STAGE/ddns-go" -v 8>&- 2>/dev/null | "$BB" grep -Fxq "$version" || { echo ENGINE_CHECK_FAILED; exit 1; }
 if [ "$existing" = 1 ]; then
     # Stop before snapshotting: an engine upgrade must not race a config write.
     stopped=1
     "$BB" ash "$BASE/control.sh" stop 8>&- >/dev/null 2>&1
     "$BB" flock -n "$BASE/daemon.lock" true || { echo SERVICE_BUSY; exit 1; }
+    "$BB" flock -n "$BASE/watchdog.lock" true || { echo SERVICE_BUSY; exit 1; }
     for f in config.yaml disabled wake-disabled selected-ip check-interval; do
         [ ! -e "$BASE/$f" ] || cp -p "$BASE/$f" "$STAGE/$f"
     done
@@ -98,7 +100,7 @@ if [ "$was_enabled" = 1 ]; then
     for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
         pid=$(cat "$BASE/engine.pid" 2>/dev/null || :)
         case "$pid" in ''|*[!0-9]*) ;; *)
-            if kill -0 "$pid" 2>/dev/null && "$BB" timeout 3 "$BB" wget -q -O /dev/null http://127.0.0.1:9876/ 8>&- 2>/dev/null; then
+            if kill -0 "$pid" 2>/dev/null && "$BB" timeout -k 1 3 "$BB" wget -q -O /dev/null http://127.0.0.1:9876/ 8>&- 2>/dev/null; then
                 sleep 1
                 if kill -0 "$pid" 2>/dev/null && "$BB" tr '\000' ' ' < "/proc/$pid/cmdline" | "$BB" grep -qF "$BASE/ddns-go -l "; then ready=1;break;fi
             fi;;

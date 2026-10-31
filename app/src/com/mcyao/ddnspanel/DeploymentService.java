@@ -21,7 +21,7 @@ public final class DeploymentService extends Service {
     static volatile int percent=-1;
     static volatile boolean success=false,paused=false;
     private PowerManager.WakeLock wake;
-    static final String[] PAYLOAD={"control.sh","daemon.sh","interval.sh","control-version","ipv6.sh","filter-ipv6.awk","wake.sh","99-ddns-go.sh","install.sh","LICENSE.ddns-go"};
+    static final String[] PAYLOAD={"control.sh","daemon.sh","watchdog.sh","process.sh","interval.sh","control-version","ipv6.sh","filter-ipv6.awk","wake.sh","99-ddns-go.sh","install.sh","LICENSE.ddns-go"};
     public IBinder onBind(Intent intent){return null;}
     public int onStartCommand(Intent intent,int flags,int id){
         if(intent==null){stopSelf();return START_NOT_STICKY;}

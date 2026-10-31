@@ -1,5 +1,30 @@
 # Changelog / 更新记录
 
+## 3.3.4
+
+- Reduced daemon/watchdog liveness polling to one second while keeping HTTP, heartbeat and wake work at thirty ticks (about thirty seconds).
+- Kept first-exit recovery immediate and repeated-failure delays at 2, 4, 8, 16 and 30 seconds. Accelerated test fixtures now identify fast polling explicitly without rewriting stop-wait timing accidentally.
+- 守护双方约每秒检查进程，慢检查仍约30秒；连续失败仍按2/4/8/16/30秒退避。保留暂停、配置、引擎接管和原唤醒设置。
+
+## 3.3.3
+
+- Split two-second process-liveness checks from thirty-second HTTP probes, heartbeat writes, wake-lock renewal and log housekeeping. A missing guardian can be restored without restarting its healthy engine.
+- Retained four slow heartbeat failures before replacing stalled supervision. First engine exits recover promptly; repeated crashes use bounded 2–30 second backoff.
+- Preserved deliberate pause, configuration and wake-lock settings. Faster polling does not acquire new wake locks or perform per-second HTTP/log writes.
+- 进程存活改为约 2 秒检查；HTTP、心跳写入、唤醒锁续期和日志整理仍为约 30 秒。守护恢复不会重启仍健康的引擎。
+- 保持四个慢周期心跳失败门槛；首次引擎退出快速恢复，连续崩溃退避，保留暂停和原设置。
+
+## 3.3.2
+
+- Added independent watchdog/daemon peer recovery, bounded heartbeat-stall detection, orphan-engine adoption and local HTTP health checks with consecutive-failure tolerance.
+- Bounded stop, HTTP and wake-lock waits; exact component checks prevent stale PID files from signaling unrelated processes. Installation/removal now verify both supervisor locks are released.
+- Preserved configuration, check intervals, deliberate pause and wake-lock preferences. No global power-policy, lock-screen or credential-storage changes.
+- Added isolated Android BusyBox fault-injection tests for killed/stalled peers, unhealthy engines, stale identifiers, pause persistence and timeout recovery. Deep-sleep scheduling and DNS-provider success still require device/network validation.
+
+- 新增独立看护与监督进程互相恢复、心跳卡死检测、孤儿引擎接管、本地 HTTP 连续失败恢复。
+- 为停止、健康检查和唤醒锁等待设置上限；使用精确组件校验，防止过期 PID 误杀其他进程；安装和卸载检查两个守护锁。
+- 保留原配置、检查间隔、手动暂停和唤醒锁偏好，不修改全局省电、锁屏或凭据存储。
+
 ## 3.3.0
 
 ### 中文

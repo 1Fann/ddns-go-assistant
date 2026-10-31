@@ -28,7 +28,7 @@ if (Test-Path -LiteralPath $build) {
 }
 New-Item -ItemType Directory -Force -Path $build,"$build/classes","$build/dex","$build/generated","$build/assets/runtime",$out | Out-Null
 $runtime = Join-Path (Split-Path -Parent $project) 'runtime'
-foreach ($name in @('control.sh','daemon.sh','interval.sh','control-version','ipv6.sh','filter-ipv6.awk','wake.sh','99-ddns-go.sh','install.sh','LICENSE.ddns-go')) {
+foreach ($name in @('control.sh','daemon.sh','watchdog.sh','process.sh','interval.sh','control-version','ipv6.sh','filter-ipv6.awk','wake.sh','99-ddns-go.sh','install.sh','LICENSE.ddns-go')) {
     $content = [IO.File]::ReadAllText((Join-Path $runtime $name)).Replace("`r`n","`n")
     [IO.File]::WriteAllText((Join-Path "$build/assets/runtime" $name),$content,[Text.UTF8Encoding]::new($false))
 }

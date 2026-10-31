@@ -7,5 +7,5 @@ for candidate in /data/adb/magisk/busybox /data/adb/ksu/bin/busybox /data/adb/ap
 done
 [ -n "$BB" ] || { echo busybox_missing; exit 20; }
 [ -f "$BASE/disabled" ] && exit 0
-"$BB" setsid "$BB" ash "$BASE/daemon.sh" </dev/null >/dev/null 2>&1 &
+"$BB" setsid "$BB" ash "$BASE/watchdog.sh" </dev/null >/dev/null 2>&1 &
 exit 0

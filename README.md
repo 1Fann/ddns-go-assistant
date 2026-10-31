@@ -1,6 +1,6 @@
 # ddns-go Android Root
 
-**Latest: 3.3.1** — [新手机部署与权限说明 / New-phone setup](NEW-PHONE-SETUP.md)
+**Latest: 3.3.4** — [新手机部署与权限说明 / New-phone setup](NEW-PHONE-SETUP.md)
 
 Magisk、KernelSU/BakaSU、APatch BusyBox 自动识别；升级自动更新后台组件，保留域名、Token、间隔及唤醒锁设置。
 
@@ -17,6 +17,7 @@ Magisk、KernelSU/BakaSU、APatch BusyBox 自动识别；升级自动更新后�
 - App 内一键部署，默认推荐 v6.17.7，也可读取官方 GitHub 最新稳定版；当前安装器仅支持 ARM64。
 - SHA-256 校验、受限归档提取、安装进度通知、配置保留和启动失败回退。没有可信校验值时拒绝安装。
 - 后台独立于 App 运行，关闭页面后继续工作。
+- 独立 watchdog 与后台监督进程互相检查，恢复异常退出或卡住的监督进程；本地管理端连续三次无响应才重启引擎，避免只看进程导致假活。手动暂停仍保持暂停。
 - 从 `wlan0` 选择 `2000::/3` 范围内的非临时 IPv6，排除 `temporary`、`secondary`、`deprecated`、`tentative`、`dadfailed` 和首选生命周期为零的地址。
 - 优先保留上次选择的地址，只要它仍符合条件，避免多个地址之间来回切换。
 - 首页可立即更新解析，或设置 1–1440 分钟的检查间隔（默认 5 分钟，重启后保留）。地址未变时保留记录。
@@ -29,9 +30,11 @@ Magisk、KernelSU/BakaSU、APatch BusyBox 自动识别；升级自动更新后�
 
 原始部署在 **Redmi Note 10 Pro、移植版澎湃 OS 4、BakaSU、ARM64** 上验证了取址、DNS 更新和重启自启。公开版本新增的安装/卸载流程尚未在多种手机上验证。请先阅读 [验证范围](docs/TESTING.md)。
 
-依赖 `/data/adb/ksu/bin/busybox`、支持 `su -M` 的 Root 管理器，以及可执行的 `service.d`。CPU 保活还要求内核提供 `/sys/power/wake_lock` 与 `wake_unlock`。**不宣称兼容所有 KernelSU、Magisk 或第三方 ROM。**
+依赖 Root 管理器提供的 BusyBox（自动查找 Magisk、KernelSU/BakaSU、APatch 路径）、支持 `su -M` 的 Root 管理器，以及可执行的 `service.d`。CPU 保活还要求内核提供 `/sys/power/wake_lock` 与 `wake_unlock`。**不宣称兼容所有 KernelSU、Magisk 或第三方 ROM。**
 
 唤醒锁会增加耗电，新安装默认关闭。它用于减少深度休眠带来的延迟，不是实时调度保证；断网、内核限制和服务异常仍会影响检查。
+
+进程存活通常每 1 秒检查一次，HTTP、心跳写入和唤醒锁续期仍约每 30 秒一次；监督进程心跳连续四个慢周期不变才判卡死，不会因加快巡检变成几秒误杀。引擎首次异常退出快速恢复，连续崩溃按 2–30 秒退避。关闭唤醒锁后，CPU 深度休眠会推迟巡检，普通后台循环不能自行唤醒 CPU。HTTP 健康检查只证明本机管理端响应，不能证明 DNS 服务商更新成功。两个守护进程同时被杀、系统整体故障和重启前后的短暂中断仍需要外部监控；本项目不修改锁屏或系统加密。
 
 ## 安装与使用
 

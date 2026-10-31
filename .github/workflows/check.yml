@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y busybox
       - run: |
           for f in runtime/*.sh tests/*.sh; do sh -n "$f"; done
           sh tests/test-ipv6.sh
           sh tests/test-interval.sh
+          python3 tests/test-cadence.py
+          BUSYBOX=$(command -v busybox) sh tests/test-reliability.sh
   android:
     runs-on: windows-latest
     steps:

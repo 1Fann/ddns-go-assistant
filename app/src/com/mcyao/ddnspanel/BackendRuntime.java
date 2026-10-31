@@ -9,7 +9,7 @@ final class BackendRuntime {
     static synchronized void ensureCurrent(Context context) throws Exception {
         RootShell.Result probe=RootShell.run("[ \"$(id -u)\" = 0 ] || exit 1; "
             +"if [ ! -f /data/adb/ddns-go/.ddns-go-android-root ]; then echo SKIP; "
-            +"elif [ \"$(cat /data/adb/ddns-go/control-version 2>/dev/null)\" = 3.3.1 ]; then echo CURRENT; "
+            +"elif [ \"$(cat /data/adb/ddns-go/control-version 2>/dev/null)\" = 3.3.4 ]; then echo CURRENT; "
             +"else echo UPDATE; fi",10);
         if(probe.code!=0)throw new IOException("ROOT_UNAVAILABLE");
         if(!probe.output.trim().equals("UPDATE"))return;

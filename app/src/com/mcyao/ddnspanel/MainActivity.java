@@ -101,7 +101,7 @@ public final class MainActivity extends Activity {
         if(!Arrays.asList("state","start","stop","wake-on","wake-off","sync").contains(operation)&&!operation.matches("interval [0-9]{2,5}"))throw new IllegalArgumentException();
         String command=CONTROL+operation;
         if(operation.equals("state"))command="[ \"$(id -u)\" = 0 ] || exit 1; if [ -f /data/adb/ddns-go/control.sh ]; then "+command+"; else echo setup=missing; fi";
-        RootShell.Result result=RootShell.run(command,55);
+        RootShell.Result result=RootShell.run(command,operation.equals("sync")||operation.startsWith("interval ")?140:55);
         return new Result(result.code,result.output);
     }
     private void load(String operation){
